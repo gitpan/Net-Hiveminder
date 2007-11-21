@@ -1,0 +1,98 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Net::Hiveminder;
+use Getopt::Long;
+use Pod::Usage;
+
+our $CONFFILE = "$ENV{HOME}/.hiveminder";
+our $VERSION = 0.01;
+our %args;
+our $hm;
+our %config;
+
+terminal();
+get_options();
+main();
+
+sub main {
+    # log in
+    $hm = Net::Hiveminder->new(use_config => 1, config_file => $CONFFILE);
+    %config = %{ $hm->config };
+
+    canonicalize_options();
+
+    my %commands = (
+        list      => \&list_tasks,
+        ls        => \&list_tasks,
+        todo      => \&list_tasks,
+
+#        add       => \&add_task,
+#        do        => \&do_task,
+#        done      => \&do_task,
+#        del       => \&del_task,
+#        rm        => \&del_task,
+#        edit      => \&edit_task,
+#        tag       => \&tag_task,
+#        unaccepted   => sub {list_tasks($unaccepted_query)},
+#        accept    => \&accept_task,
+#        decline   => \&decline_task,
+#        assign    => \&assign_task,
+#        requests  => sub {list_tasks($requests_query)},
+#        hide      => \&hide_task,
+#        comment   => \&comment_task,
+#        dl        => \&download_textfile,
+#        download  => \&download_textfile,
+#        ul        => \&upload_textfile,
+#        upload    => \&upload_textfile,
+#        bd        => \&braindump,
+#        braindump => \&braindump,
+       );
+
+    my $command = shift @ARGV || "list";
+    $commands{$command} or pod2usage(-message => "Unknown command: $command", -exitval => 2);
+
+    $commands{$command}->();
+}
+
+sub terminal {
+    my $encoding = eval {
+        require Term::Encoding; Term::Encoding::get_encoding();
+    } || "utf-8";
+
+    binmode STDOUT, ":encoding($encoding)";
+}
+
+sub get_options {
+    GetOptions(\%args,
+               "tags=s",
+               "tag=s@", "group=s",
+               "priority|pri=s",
+               "due=s",
+               "hide=s",
+               "owner=s",
+               "help",
+               "version",
+               "config=s",
+    ) or pod2usage(2);
+
+    $CONFFILE = $args{config} if $args{config};
+
+    pod2usage(0) if $args{help};
+    if ($args{version}) {
+        version();
+        exit();
+    }
+}
+
+sub canonicalize_options {
+    push @{$args{tag}}, split /\s+/, $args{tags} if $args{tags};
+
+    $args{priority} = $hm->canonicalize_priority($args{priority});
+    $args{owner} ||= "me";
+}
+
+sub list_tasks {
+    print $hm->todo . "\n";
+}
+

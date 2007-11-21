@@ -1,0 +1,82 @@
+NAME
+    Net::Hiveminder - Perl interface to hiveminder.com
+
+VERSION
+    Version 0.01 released 21 Nov 07
+
+SYNOPSIS
+        use Net::Hiveminder;
+        my $hm = Net::Hiveminder->new(use_config => 1);
+        print $hm->todo;
+        $hm->create_task("Boy these pretzels are making me thirsty [due tomorrow]");
+
+DESCRIPTION
+    Hiveminder is a collaborate todo list organizer, built with Jifty.
+
+    This module uses Hiveminder's REST API to let you manage your tasks any
+    way you want to.
+
+    This module is built on top of Net::Jifty. Consult that module's
+    documentation for the lower-level interface.
+
+  display_tasks TASKS
+    This will take a list of hash references (tasks) and convert them to
+    human-readable form.
+
+    In scalar context it will return the tasks joined by newlines.
+
+  get_tasks ARGS
+    Runs a search (with ARGS) for tasks. There are no defaults here, so this
+    can be used for anything.
+
+  todo_tasks [ARGS]
+    Returns a list of hash references, each one a task. This uses the same
+    query that the home page of Hiveminder uses.
+
+  todo [ARGS]
+    Returns a list of tasks in human-readable form. Additional arguments
+    will be included in the search.
+
+    In scalar context it will return the concatenation of the tasks.
+
+  create_task SUMMARY
+    Creates a new task with the given summary.
+
+  read_task Locator
+    Load a task with the given record locator.
+
+  update_task Locator, Args
+    Takes a record locator and uses it to update that task with Args.
+
+  delete_task Locator
+    Takes a record locator and uses it to delete that task.
+
+  braindump Text[, Tokens]
+    Braindumps the given text. You may also pass a string of tokens to give
+    defaults to each of the braindumped tasks.
+
+  email_of id
+    Take a user ID and retrieve that user's email address.
+
+  canonicalize_priority priority
+    Attempts to understand a variety of different priority formats and
+    change it to the standard 1-5. This will "confess" if it doesn't
+    understand the priority.
+
+SEE ALSO
+    Jifty, Net::Jifty
+
+AUTHOR
+    Shawn M Moore, "<sartak at gmail.com>"
+
+BUGS
+    Please report any bugs or feature requests to "bug-net-hiveminder at
+    rt.cpan.org", or through the web interface at
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Net-Hiveminder>.
+
+COPYRIGHT & LICENSE
+    Copyright 2007 Best Practical Solutions.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+

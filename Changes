@@ -1,5 +1,12 @@
 Revision history for Net-Hiveminder
 
-0.01    Wed Nov 21 16:45:38 2007
+0.02    Sat Jan 12 08 22:48:24
+        Remove canonicalize_priority, Hiveminder does it for us.
+        Add priority method
+        Add priority to display_tasks
+        Add done method
+        Add tasks2ids method
+
+0.01    Wed Nov 21 07 16:45:38 2007
         First version, released on an unsuspecting world.
 

@@ -12,11 +12,11 @@ Net::Hiveminder - Perl interface to hiveminder.com
 
 =head1 VERSION
 
-Version 0.01 released 21 Nov 07
+Version 0.02 released 12 Jan 08
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 
@@ -55,10 +55,11 @@ has '+config_file' => (
 
 =head2 display_tasks TASKS
 
-This will take a list of hash references (tasks) and convert them to
+This will take a list of hash references, C<TASKS>, and convert each to a
 human-readable form.
 
-In scalar context it will return the tasks joined by newlines.
+In scalar context it will return the readable forms of these tasks joined by
+newlines.
 
 =cut
 
@@ -83,6 +84,9 @@ sub display_tasks {
             $display .= " [$field: $task->{$field}]"
                 if $task->{$field};
         }
+
+        $display .= " [priority: " . $self->priority($task->{priority}) . "]"
+            if $task->{priority} != 3;
 
         my $helper = sub {
             my ($field, $name) = @_;
@@ -111,8 +115,11 @@ sub display_tasks {
 
 =head2 get_tasks ARGS
 
-Runs a search (with ARGS) for tasks. There are no defaults here, so this can
+Runs a search with C<ARGS> for tasks. There are no defaults here, so this can
 be used for anything.
+
+Returns a list of hash references, each one being a task. Use C<display_tasks>
+if necessary.
 
 =cut
 
@@ -124,7 +131,8 @@ sub get_tasks {
 =head2 todo_tasks [ARGS]
 
 Returns a list of hash references, each one a task. This uses the same query
-that the home page of Hiveminder uses.
+that the home page of Hiveminder uses. The optional C<ARGS> will be passed as
+well so you can narrow down your todo list.
 
 =cut
 
@@ -146,8 +154,8 @@ sub todo_tasks {
 
 =head2 todo [ARGS]
 
-Returns a list of tasks in human-readable form. Additional arguments will be
-included in the search.
+Returns a list of tasks in human-readable form. The optional C<ARGS> will be
+passed as well so you can narrow down your todo list.
 
 In scalar context it will return the concatenation of the tasks.
 
@@ -161,7 +169,7 @@ sub todo {
 
 =head2 create_task SUMMARY
 
-Creates a new task with the given summary.
+Creates a new task with C<SUMMARY>.
 
 =cut
 
@@ -172,52 +180,53 @@ sub create_task {
     $self->create(Task => summary => $summary);
 }
 
-=head2 read_task Locator
+=head2 read_task LOCATOR
 
-Load a task with the given record locator.
+Load task C<LOCATOR>.
 
 =cut
 
 sub read_task {
     my $self  = shift;
     my $loc   = shift;
-    my $id    = $LOCATOR->decode($loc);
+    my $id    = $self->tasks2ids($loc);
 
     return $self->read(Task => id => $id);
 }
 
-=head2 update_task Locator, Args
+=head2 update_task LOCATOR, ARGS
 
-Takes a record locator and uses it to update that task with Args.
+Update task C<LOCATOR> with C<ARGS>.
 
 =cut
 
 sub update_task {
     my $self = shift;
     my $loc  = shift;
-    my $id   = $LOCATOR->decode($loc);
+    my $id   = $self->tasks2ids($loc);
 
     return $self->update(Task => id => $id, @_);
 }
 
-=head2 delete_task Locator
+=head2 delete_task LOCATOR
 
-Takes a record locator and uses it to delete that task.
+Delete task C<LOCATOR>.
 
 =cut
 
 sub delete_task {
     my $self = shift;
     my $loc  = shift;
-    my $id   = $LOCATOR->decode($loc);
+    my $id   = $self->tasks2ids($loc);
 
     return $self->delete(Task => id => $id);
 }
 
-=head2 braindump Text[, Tokens]
+=head2 braindump TEXT[, TOKENS]
 
-Braindumps the given text. You may also pass a string of tokens to give
-defaults to each of the braindumped tasks.
+Braindumps C<TEXT>. C<TOKENS> may be used to provide default attributes to all
+the braindumped tasks (this is part of what the filter feature of Hiveminder's
+IM bot does).
 
 =cut
 
@@ -230,54 +239,124 @@ sub braindump {
                 ->{message};
 }
 
-=head2 email_of id
+=head2 upload_text TEXT
 
-Take a user ID and retrieve that user's email address.
+Uploads C<TEXT> to BTDT::Action::UploadTasks.
 
 =cut
 
-# XXX: this should go into Net::Jifty
-
-sub email_of {
+sub upload_text {
     my $self = shift;
-    my $id = shift;
+    my $text = shift;
 
-    my $user = $self->read(User => id => $id);
-    return $user->{email};
+    return $self->act(UploadTasks => content => $text, format => 'sync')
+                ->{message};
 }
 
-=head2 canonicalize_priority priority
+=head2 upload_file FILENAME
 
-Attempts to understand a variety of different priority formats and change it
-to the standard 1-5. This will C<confess> if it doesn't understand the
-priority.
+Uploads C<FILENAME> to BTDT::Action::UploadTasks.
 
 =cut
 
-my %priority_map = (
-    lowest  => 1,
-    low     => 2,
-    normal  => 3,
-    high    => 4,
-    highest => 5,
-    e       => 1,
-    d       => 2,
-    c       => 3,
-    b       => 4,
-    a       => 5,
-    1       => 1,
-    2       => 2,
-    3       => 3,
-    4       => 4,
-    5       => 5,
-);
+sub upload_file {
+    my $self = shift;
+    my $file = shift;
 
-sub canonicalize_priority {
+    my $text = do { local (@ARGV, $/) = $file; <> };
+
+    return $self->upload_text($text);
+}
+
+=head2 download_text
+
+Downloads your tasks. This also gets the metadata so that you can edit the text
+and upload it, and it'll make the same changes to your task list.
+
+This does not currently accept query arguments, because Hiveminder expects a
+"/not/owner/me/group/personal" type argument string, when all we can produce is
+"owner_not => 'me', group => 'personal'"
+
+=cut
+
+sub download_text {
+    my $self = shift;
+    my $query = shift;
+
+    return $self->act(DownloadTasks => query => $query, format => 'sync')->{content}{result};
+}
+
+=head2 download_file FILENAME
+
+Downloads your tasks and puts them into C<FILENAME>.
+
+This does not currently accept query arguments, because Hiveminder expects a
+"/not/owner/me/group/personal" type argument string, when all we can produce is
+"owner_not => 'me', group => 'personal'"
+
+=cut
+
+sub download_file {
+    my $self = shift;
+    my $file = shift;
+
+    my $text = $self->download_text(@_);
+    open my $handle, '>', $file
+        or confess "Unable to open $file for writing: $!";
+    print $handle $text;
+    close $handle;
+}
+
+=head2 priority (NUMBER | TASK) -> Maybe String
+
+Returns the "word" of a priority. One of: lowest, low, normal, high, highest.
+If the priority is out of range, C<undef> will be returned.
+
+=cut
+
+my @priorities = (undef, qw/lowest low normal high highest/);
+sub priority {
     my $self = shift;
     my $priority = shift;
 
-    return $priority_map{lc $priority}
-        or confess "Unknown priority: '$priority'"
+    # if they pass in a task, DTRT :)
+    $priority = $priority->{priority}
+        if ref($priority) eq 'HASH';
+
+    return $priorities[$priority];
+}
+
+=head2 done LOCATORS
+
+Marks the given tasks as complete.
+
+=cut
+
+sub done {
+    my $self = shift;
+
+    for (@_) {
+        my $id = $self->tasks2ids($_);
+        $self->update('Task', id => $id, complete => 1);
+    }
+}
+
+=head2 tasks2ids LOCATORS -> IDS
+
+Transforms the given record locators (or tasks) to regular IDs.
+
+=cut
+
+sub tasks2ids {
+    my $self = shift;
+
+    my @ids = map {
+        my $locator = $_;
+        $locator =~ s/^#+//; # remove leading #
+        $LOCATOR->decode($locator);
+    } @_;
+
+    return wantarray ? @ids : $ids[0];
 }
 
 =head1 SEE ALSO
@@ -286,7 +365,7 @@ L<Jifty>, L<Net::Jifty>
 
 =head1 AUTHOR
 
-Shawn M Moore, C<< <sartak at gmail.com> >>
+Shawn M Moore, C<< <sartak at bestpractical.com> >>
 
 =head1 BUGS
 

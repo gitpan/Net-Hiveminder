@@ -2,7 +2,7 @@ NAME
     Net::Hiveminder - Perl interface to hiveminder.com
 
 VERSION
-    Version 0.01 released 21 Nov 07
+    Version 0.02 released 12 Jan 08
 
 SYNOPSIS
         use Net::Hiveminder;
@@ -20,54 +20,84 @@ DESCRIPTION
     documentation for the lower-level interface.
 
   display_tasks TASKS
-    This will take a list of hash references (tasks) and convert them to
+    This will take a list of hash references, "TASKS", and convert each to a
     human-readable form.
 
-    In scalar context it will return the tasks joined by newlines.
+    In scalar context it will return the readable forms of these tasks
+    joined by newlines.
 
   get_tasks ARGS
-    Runs a search (with ARGS) for tasks. There are no defaults here, so this
+    Runs a search with "ARGS" for tasks. There are no defaults here, so this
     can be used for anything.
+
+    Returns a list of hash references, each one being a task. Use
+    "display_tasks" if necessary.
 
   todo_tasks [ARGS]
     Returns a list of hash references, each one a task. This uses the same
-    query that the home page of Hiveminder uses.
+    query that the home page of Hiveminder uses. The optional "ARGS" will be
+    passed as well so you can narrow down your todo list.
 
   todo [ARGS]
-    Returns a list of tasks in human-readable form. Additional arguments
-    will be included in the search.
+    Returns a list of tasks in human-readable form. The optional "ARGS" will
+    be passed as well so you can narrow down your todo list.
 
     In scalar context it will return the concatenation of the tasks.
 
   create_task SUMMARY
-    Creates a new task with the given summary.
+    Creates a new task with "SUMMARY".
 
-  read_task Locator
-    Load a task with the given record locator.
+  read_task LOCATOR
+    Load task "LOCATOR".
 
-  update_task Locator, Args
-    Takes a record locator and uses it to update that task with Args.
+  update_task LOCATOR, ARGS
+    Update task "LOCATOR" with "ARGS".
 
-  delete_task Locator
-    Takes a record locator and uses it to delete that task.
+  delete_task LOCATOR
+    Delete task "LOCATOR".
 
-  braindump Text[, Tokens]
-    Braindumps the given text. You may also pass a string of tokens to give
-    defaults to each of the braindumped tasks.
+  braindump TEXT[, TOKENS]
+    Braindumps "TEXT". "TOKENS" may be used to provide default attributes to
+    all the braindumped tasks (this is part of what the filter feature of
+    Hiveminder's IM bot does).
 
-  email_of id
-    Take a user ID and retrieve that user's email address.
+  upload_text TEXT
+    Uploads "TEXT" to BTDT::Action::UploadTasks.
 
-  canonicalize_priority priority
-    Attempts to understand a variety of different priority formats and
-    change it to the standard 1-5. This will "confess" if it doesn't
-    understand the priority.
+  upload_file FILENAME
+    Uploads "FILENAME" to BTDT::Action::UploadTasks.
+
+  download_text
+    Downloads your tasks. This also gets the metadata so that you can edit
+    the text and upload it, and it'll make the same changes to your task
+    list.
+
+    This does not currently accept query arguments, because Hiveminder
+    expects a "/not/owner/me/group/personal" type argument string, when all
+    we can produce is "owner_not => 'me', group => 'personal'"
+
+  download_file FILENAME
+    Downloads your tasks and puts them into "FILENAME".
+
+    This does not currently accept query arguments, because Hiveminder
+    expects a "/not/owner/me/group/personal" type argument string, when all
+    we can produce is "owner_not => 'me', group => 'personal'"
+
+  priority (NUMBER | TASK) -> Maybe String
+    Returns the "word" of a priority. One of: lowest, low, normal, high,
+    highest. If the priority is out of range, "undef" will be returned.
+
+  done LOCATORS
+    Marks the given tasks as complete.
+
+  tasks2ids LOCATORS -> IDS
+    Transforms the given record locators (or tasks) to regular IDs.
 
 SEE ALSO
     Jifty, Net::Jifty
 
 AUTHOR
-    Shawn M Moore, "<sartak at gmail.com>"
+    Shawn M Moore, "<sartak at bestpractical.com>"
 
 BUGS
     Please report any bugs or feature requests to "bug-net-hiveminder at

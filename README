@@ -2,7 +2,7 @@ NAME
     Net::Hiveminder - Perl interface to hiveminder.com
 
 VERSION
-    Version 0.02 released 12 Jan 08
+    Version 0.03 released 21 Jan 08
 
 SYNOPSIS
         use Net::Hiveminder;
@@ -19,12 +19,23 @@ DESCRIPTION
     This module is built on top of Net::Jifty. Consult that module's
     documentation for the lower-level interface.
 
-  display_tasks TASKS
+  display_tasks [ARGS], TASKS
     This will take a list of hash references, "TASKS", and convert each to a
     human-readable form.
 
     In scalar context it will return the readable forms of these tasks
     joined by newlines.
+
+    Passing options into this is somewhat tricky, because tasks are
+    currently regular hashes. You may pass arguments to this method as such:
+
+        $hm->display_tasks([arg1 => 'val1', arg2 => 'val2'], @tasks)
+
+    The arguments currently respected are:
+
+    linkify_locator
+        Make the record locator ("#foo") into an HTML link, pointing to the
+        task on "site".
 
   get_tasks ARGS
     Runs a search with "ARGS" for tasks. There are no defaults here, so this
@@ -56,10 +67,19 @@ DESCRIPTION
   delete_task LOCATOR
     Delete task "LOCATOR".
 
-  braindump TEXT[, TOKENS]
-    Braindumps "TEXT". "TOKENS" may be used to provide default attributes to
-    all the braindumped tasks (this is part of what the filter feature of
-    Hiveminder's IM bot does).
+  braindump TEXT[, ARGS]
+    Braindumps "TEXT".
+
+    Optional arguments:
+
+    tokens => string | arrayref
+        tokens may be used to provide default attributes to all the
+        braindumped tasks (this is part of what the filter feature of
+        Hiveminder's IM bot does).
+
+    returns => 'ids' | 'tasks'
+        Return the affected task IDs, or the tasks themselves, instead of a
+        summary of the changes made.
 
   upload_text TEXT
     Uploads "TEXT" to BTDT::Action::UploadTasks.
@@ -90,8 +110,21 @@ DESCRIPTION
   done LOCATORS
     Marks the given tasks as complete.
 
-  tasks2ids LOCATORS -> IDS
+  loc2id (LOCATOR|TASK)s -> IDs
     Transforms the given record locators (or tasks) to regular IDs.
+
+  id2loc IDs -> LOCATORs
+    Transform the given IDs into record locators.
+
+  comments_on TASK -> (String)s
+    Returns a list of the comments on the given task.
+
+  comment_on TASK, MESSAGE
+    Add a comment to TASK.
+
+    This method requires Email::Simple::Creator, which is an optional
+    dependency of Net::Hiveminder. If Creator is unavailable, then this will
+    throw an error.
 
 SEE ALSO
     Jifty, Net::Jifty

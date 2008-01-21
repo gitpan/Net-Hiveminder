@@ -15,6 +15,7 @@ no_index:
     - inc
     - t
 requires: 
+  Email::Simple::Creator: 0
   Net::Jifty: 0.04
   Number::RecordLocator: 0
-version: 0.02
+version: 0.03

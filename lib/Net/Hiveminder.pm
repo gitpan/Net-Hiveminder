@@ -12,11 +12,11 @@ Net::Hiveminder - Perl interface to hiveminder.com
 
 =head1 VERSION
 
-Version 0.02 released 12 Jan 08
+Version 0.03 released 21 Jan 08
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 SYNOPSIS
 
@@ -53,13 +53,29 @@ has '+config_file' => (
     default => "$ENV{HOME}/.hiveminder",
 );
 
-=head2 display_tasks TASKS
+=head2 display_tasks [ARGS], TASKS
 
 This will take a list of hash references, C<TASKS>, and convert each to a
 human-readable form.
 
 In scalar context it will return the readable forms of these tasks joined by
 newlines.
+
+Passing options into this is somewhat tricky, because tasks are currently
+regular hashes. You may pass arguments to this method as such:
+
+    $hm->display_tasks([arg1 => 'val1', arg2 => 'val2'], @tasks)
+
+The arguments currently respected are:
+
+=over 4
+
+=item linkify_locator
+
+Make the record locator (C<#foo>) into an HTML link, pointing to the task on
+C<site>.
+
+=back
 
 =cut
 
@@ -70,9 +86,24 @@ sub display_tasks {
     my $now = DateTime->now;
     my %email_of;
 
+    my %args;
+    if (ref($_[0]) eq 'ARRAY') {
+        %args = @{ shift(@_) };
+    }
+
     for my $task (@_) {
-        my $locator = $LOCATOR->encode($task->{id});
-        my $display = "#$locator: $task->{summary}";
+        my $locator = $self->id2loc($task->{id});
+        my $display;
+        if ($args{linkify_locator}) {
+            $display = sprintf '<a href="%s/task/%s">#%s</a>: %s',
+                $self->site,
+                $locator,
+                $locator,
+                $task->{summary};
+        }
+        else {
+            $display = "#$locator: $task->{summary}";
+        }
 
         # don't display start date if it's <= today
         delete $task->{starts}
@@ -189,7 +220,7 @@ Load task C<LOCATOR>.
 sub read_task {
     my $self  = shift;
     my $loc   = shift;
-    my $id    = $self->tasks2ids($loc);
+    my $id    = $self->loc2id($loc);
 
     return $self->read(Task => id => $id);
 }
@@ -203,7 +234,7 @@ Update task C<LOCATOR> with C<ARGS>.
 sub update_task {
     my $self = shift;
     my $loc  = shift;
-    my $id   = $self->tasks2ids($loc);
+    my $id   = $self->loc2id($loc);
 
     return $self->update(Task => id => $id, @_);
 }
@@ -217,26 +248,62 @@ Delete task C<LOCATOR>.
 sub delete_task {
     my $self = shift;
     my $loc  = shift;
-    my $id   = $self->tasks2ids($loc);
+    my $id   = $self->loc2id($loc);
 
     return $self->delete(Task => id => $id);
 }
 
-=head2 braindump TEXT[, TOKENS]
+=head2 braindump TEXT[, ARGS]
 
-Braindumps C<TEXT>. C<TOKENS> may be used to provide default attributes to all
-the braindumped tasks (this is part of what the filter feature of Hiveminder's
-IM bot does).
+Braindumps C<TEXT>.
+
+Optional arguments:
+
+=over 4
+
+=item tokens => string | arrayref
+
+tokens may be used to provide default attributes to all the braindumped tasks
+(this is part of what the filter feature of Hiveminder's IM bot does).
+
+=item returns => 'ids' | 'tasks'
+
+Return the affected task IDs, or the tasks themselves, instead of a summary of
+the changes made.
+
+=back
 
 =cut
 
 sub braindump {
     my $self = shift;
     my $text = shift;
-    my $tokens = shift || '';
 
-    return $self->act('ParseTasksMagically', text => $text, tokens => $tokens)
-                ->{message};
+    if (@_ == 1) {
+        Carp::carp("You must now pass in an explicit 'tokens => string|arrayref' to have default tokens in Net::Hiveminder->braindump");
+        unshift @_, 'tokens';
+    }
+
+    my %args = (
+        tokens  => '',
+        returns => 'summary',
+        @_,
+    );
+
+    my $tokens = $args{tokens};
+    if (ref($tokens) eq 'ARRAY') {
+        $tokens = join ' ', @$tokens;
+    }
+
+    my $ret = $self->act('ParseTasksMagically', text => $text, tokens => $tokens);
+    if ($args{returns} eq 'ids') {
+        return @{ $ret->{content}->{ids} || [] };
+    }
+    elsif ($args{returns} eq 'tasks') {
+        return @{ $ret->{content}->{created} || [] };
+    }
+
+    return $ret->{message};
 }
 
 =head2 upload_text TEXT
@@ -336,27 +403,97 @@ sub done {
     my $self = shift;
 
     for (@_) {
-        my $id = $self->tasks2ids($_);
+        my $id = $self->loc2id($_);
         $self->update('Task', id => $id, complete => 1);
     }
 }
 
-=head2 tasks2ids LOCATORS -> IDS
+=head2 loc2id (LOCATOR|TASK)s -> IDs
 
 Transforms the given record locators (or tasks) to regular IDs.
 
 =cut
 
-sub tasks2ids {
+sub loc2id {
     my $self = shift;
 
     my @ids = map {
         my $locator = $_;
-        $locator =~ s/^#+//; # remove leading #
-        $LOCATOR->decode($locator);
+
+        # they passed in a hashref, so almost certainly a real task
+        ref($locator) eq 'HASH'
+            ? $locator->{id}
+            : do {
+                $locator =~ s/^#+//; # remove leading #
+                $LOCATOR->decode($locator);
+            };
     } @_;
 
     return wantarray ? @ids : $ids[0];
+}
+
+sub tasks2ids {
+    Carp::carp "Net::Hiveminder->tasks2ids is deprecated, use loc2id instead.";
+    loc2id(@_);
+}
+
+=head2 id2loc IDs -> LOCATORs
+
+Transform the given IDs into record locators.
+
+=cut
+
+sub id2loc {
+    my $self = shift;
+
+    my @locs = map { $LOCATOR->encode($_) } @_;
+
+    return wantarray ? @locs : $locs[0];
+}
+
+=head2 comments_on TASK -> (String)s
+
+Returns a list of the comments on the given task.
+
+=cut
+
+sub comments_on {
+    my $self = shift;
+    my $task = $self->loc2id(shift);
+
+    return grep { defined }
+           map { $_->{message} }
+           $self->read('TaskEmail', task_id => $task);
+}
+
+=head2 comment_on TASK, MESSAGE
+
+Add a comment to TASK.
+
+This method requires L<Email::Simple::Creator>, which is an optional dependency
+of Net::Hiveminder. If Creator is unavailable, then this will throw an error.
+
+=cut
+
+sub comment_on {
+    my $self = shift;
+    my $task = $self->loc2id(shift);
+    my $msg  = shift;
+
+    require Email::Simple;
+    require Email::Simple::Creator;
+
+    my $email = Email::Simple->create(
+        header => [
+            From => $self->email,
+        ],
+        body => $msg,
+    );
+
+    $self->create('TaskEmail',
+        task_id => $task,
+        message => $email->as_string,
+    );
 }
 
 =head1 SEE ALSO

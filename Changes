@@ -1,5 +1,15 @@
 Revision history for Net-Hiveminder
 
+0.03    Mon Jan 21 08 01:50:38
+        Rename tasks2ids to loc2id
+        Add id2loc method
+        You can pass arguments to display_tasks. See its POD for how, and what
+        loc2id can now take task-hashes
+        You can pass arguments to braindump. The "tokens" argument must now be
+            passed in as a special option (tokens => 'foo')
+        Add comments_on(task) method
+        Add comment_on(task, msg) method
+
 0.02    Sat Jan 12 08 22:48:24
         Remove canonicalize_priority, Hiveminder does it for us.
         Add priority method

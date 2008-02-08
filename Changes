@@ -1,5 +1,13 @@
 Revision history for Net-Hiveminder
 
+0.04    Thu Feb 07 08 21:17:59
+        Add new scripts: todo, create, done
+        Fix undef warning in download_text
+        Move scripts to hm-* and install them automatically
+        Fix comments_on to give all comments, not an arbitrary one
+        Add * to completed tasks in display_tasks
+        Add bulk_update and complete_tasks
+
 0.03    Mon Jan 21 08 01:50:38
         Rename tasks2ids to loc2id
         Add id2loc method

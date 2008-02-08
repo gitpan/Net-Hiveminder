@@ -14,14 +14,17 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 7b294199e0923440e54210c1c3f7ef2caa7b274b Changes
-SHA1 d05a72cad93794c4a48bc420c854672aaf166105 MANIFEST
-SHA1 bff8b2bb1434e02b7030de44d1df582525a52155 META.yml
-SHA1 d12717e17aeeaa4ba9dc494489695b10bedabb4b Makefile.PL
-SHA1 3d9a2fb9dbbc5397c6d8c8551bc9950895ac5050 README
-SHA1 c2d28957665c0c4436f4985af8d486b36bb75f1a bin/braindump
+SHA1 9b603cab9aa861754ae9babb92106bd736c7526f Changes
+SHA1 6cd5059a0260d875f6de80bb3c6c1adcfd2df3d6 MANIFEST
+SHA1 025d8b93c1519f3c18b1369be42acd88a47fe339 META.yml
+SHA1 02b87b724e669f3fb61bd05036033c1e8d5b486c Makefile.PL
+SHA1 52f14e81d1a3b4566a36ab6eb6297f6363aeca17 README
 SHA1 053eac69ed3cb793881ada775a13862e92700564 bin/hm
-SHA1 e06b801a037fb365d9367a907d920057ad8e01cc bin/sync_tasks
+SHA1 c2d28957665c0c4436f4985af8d486b36bb75f1a bin/hm-braindump
+SHA1 6786f1492f1fc5937ed7b0d4555ace37075c14d1 bin/hm-create
+SHA1 729dd6a8a5b75ed46b6cde6776e5f73f7ee28a87 bin/hm-done
+SHA1 e06b801a037fb365d9367a907d920057ad8e01cc bin/hm-sync
+SHA1 966dcedaa4412d460902936b63cdf1b5ec945324 bin/hm-todo
 SHA1 603bb9de29fb8cba7f13409c546750972eff645d inc/Module/AutoInstall.pm
 SHA1 78edb89a439463e44c33a72bbee84c54d0dc8aaf inc/Module/Install.pm
 SHA1 ae32c02b539901de91f06366ce9bdbb7a7bd040b inc/Module/Install/AutoInstall.pm
@@ -31,14 +34,15 @@ SHA1 b779375b90c16af2f31f38a1dd2b5df223c7f2fb inc/Module/Install/Fetch.pm
 SHA1 6bf0d0d100b94d1a2ce64d010c8813dec26ac480 inc/Module/Install/Include.pm
 SHA1 2054450e1e9c1dd8056362bf4a64ae70d5d71476 inc/Module/Install/Makefile.pm
 SHA1 5d6189b2cad15cf9932a28faafd55130c8247e83 inc/Module/Install/Metadata.pm
+SHA1 8015c2aceacb9b793e8a472036f93d0bac67c0db inc/Module/Install/Scripts.pm
 SHA1 02af973fae2ac3531fa6b704574b2b8cb2a08148 inc/Module/Install/Win32.pm
 SHA1 3a2eab96e91cca8d99938cda7791759ae9d97b3a inc/Module/Install/WriteAll.pm
-SHA1 d320d2bdb7b513a00669c495c60999aff2e3f374 lib/Net/Hiveminder.pm
+SHA1 bd72973a656e22862c811b108705a0842859256f lib/Net/Hiveminder.pm
 SHA1 16552e29fc20df41ae80fbd70289ca803d3121c0 t/000-load.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.7 (Darwin)
 
-iD8DBQFHlEIMsxfQtHhyRPoRAq4kAJwO0ZHkFK4vZ486LR5ipXHH5zRGfQCgjg/O
-QJnBpdvecSJvm/Obwq4N5m4=
-=9msg
+iD8DBQFHq7wssxfQtHhyRPoRAiruAJ9MXRcP7mD2vcV/liW9HImed/9+mgCfXS3a
+LQoLcN055OMySk6XKnsJGmU=
+=427c
 -----END PGP SIGNATURE-----

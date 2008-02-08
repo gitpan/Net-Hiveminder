@@ -15,6 +15,10 @@ features(
 
 build_requires  'Test::More';
 
+install_script "bin/hm";
+install_script "bin/hm-$_"
+    for qw/braindump create done sync todo/;
+
 auto_install;
 WriteAll;
 

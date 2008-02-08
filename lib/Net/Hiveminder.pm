@@ -12,11 +12,11 @@ Net::Hiveminder - Perl interface to hiveminder.com
 
 =head1 VERSION
 
-Version 0.03 released 21 Jan 08
+Version 0.04 released 07 Feb 08
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 SYNOPSIS
 
@@ -94,15 +94,20 @@ sub display_tasks {
     for my $task (@_) {
         my $locator = $self->id2loc($task->{id});
         my $display;
+
+        if ($task->{complete}) {
+            $display .= '* ';
+        }
+
         if ($args{linkify_locator}) {
-            $display = sprintf '<a href="%s/task/%s">#%s</a>: %s',
+            $display .= sprintf '<a href="%s/task/%s">#%s</a>: %s',
                 $self->site,
                 $locator,
                 $locator,
                 $task->{summary};
         }
         else {
-            $display = "#$locator: $task->{summary}";
+            $display .= "#$locator: $task->{summary}";
         }
 
         # don't display start date if it's <= today
@@ -253,6 +258,71 @@ sub delete_task {
     return $self->delete(Task => id => $id);
 }
 
+=head2 bulk_update ARGS
+
+Bulk-updates the given tasks. You can pass tasks in with one or more of the
+following:
+
+=over 4
+
+=item tasks
+
+An array reference of task hashes or locators, or a space-delimited string of
+locators.
+
+=item ids
+
+An array reference or space-delimited string of task IDs.
+
+=back
+
+=cut
+
+sub bulk_update {
+    my $self = shift;
+    my %args = @_;
+
+    my @ids;
+    my $ids = delete $args{ids} || '';
+    my $tasks = delete $args{tasks} || '';
+
+    if (ref($ids) eq 'ARRAY') {
+        push @ids, @$ids;
+    }
+    else {
+        push @ids, split ' ', $ids;
+    }
+
+    if (ref($tasks) eq 'ARRAY') {
+        push @ids, $self->loc2id(@$tasks);
+    }
+    elsif (ref($tasks) eq 'HASH') {
+        push @ids, $self->loc2id($tasks);
+    }
+    else {
+        push @ids, $self->loc2id(split ' ', $tasks);
+    }
+
+    $self->act('BulkUpdateTasks',
+        ids => join(' ', @ids),
+        %args,
+    );
+}
+
+=head2 complete_tasks TASKS
+
+Marks the list of tasks or locators as complete.
+
+=cut
+
+sub complete_tasks {
+    my $self = shift;
+    $self->bulk_update(
+        tasks    => \@_,
+        complete => 1,
+    );
+}
+
 =head2 braindump TEXT[, ARGS]
 
 Braindumps C<TEXT>.
@@ -350,7 +420,10 @@ sub download_text {
     my $self = shift;
     my $query = shift;
 
-    return $self->act(DownloadTasks => query => $query, format => 'sync')->{content}{result};
+    return $self->act('DownloadTasks' =>
+        $query ? (query => $query) : (),
+        format => 'sync',
+    )->{content}{result};
 }
 
 =head2 download_file FILENAME
@@ -463,7 +536,7 @@ sub comments_on {
 
     return grep { defined }
            map { $_->{message} }
-           $self->read('TaskEmail', task_id => $task);
+           @{ $self->search('TaskEmail', task_id => $task) || [] };
 }
 
 =head2 comment_on TASK, MESSAGE

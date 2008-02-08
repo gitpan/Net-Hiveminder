@@ -2,7 +2,7 @@ NAME
     Net::Hiveminder - Perl interface to hiveminder.com
 
 VERSION
-    Version 0.03 released 21 Jan 08
+    Version 0.04 released 07 Feb 08
 
 SYNOPSIS
         use Net::Hiveminder;
@@ -66,6 +66,19 @@ DESCRIPTION
 
   delete_task LOCATOR
     Delete task "LOCATOR".
+
+  bulk_update ARGS
+    Bulk-updates the given tasks. You can pass tasks in with one or more of
+    the following:
+
+    tasks
+        An array reference of task hashes or locators, or a space-delimited
+        string of locators.
+
+    ids An array reference or space-delimited string of task IDs.
+
+  complete_tasks TASKS
+    Marks the list of tasks or locators as complete.
 
   braindump TEXT[, ARGS]
     Braindumps "TEXT".

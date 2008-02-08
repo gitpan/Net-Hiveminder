@@ -18,4 +18,4 @@ requires:
   Email::Simple::Creator: 0
   Net::Jifty: 0.04
   Number::RecordLocator: 0
-version: 0.03
+version: 0.04

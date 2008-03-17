@@ -1,10 +1,11 @@
 --- 
 abstract: Perl interface to hiveminder.com
-author: Shawn M Moore, C<< <sartak at bestpractical.com> >>
+author: 
+  - Shawn M Moore, C<< <sartak at bestpractical.com> >>
 build_requires: 
   Test::More: 0
 distribution_type: module
-generated_by: Module::Install version 0.67
+generated_by: Module::Install version 0.68
 license: perl
 meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
@@ -16,6 +17,6 @@ no_index:
     - t
 requires: 
   Email::Simple::Creator: 0
-  Net::Jifty: 0.04
+  Net::Jifty: 0.06
   Number::RecordLocator: 0
-version: 0.04
+version: 0.05

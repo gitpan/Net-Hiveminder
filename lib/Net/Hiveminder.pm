@@ -12,11 +12,11 @@ Net::Hiveminder - Perl interface to hiveminder.com
 
 =head1 VERSION
 
-Version 0.04 released 07 Feb 08
+Version 0.05 released 17 Mar 08
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 SYNOPSIS
 
@@ -51,6 +51,10 @@ has '+appname' => (
 
 has '+config_file' => (
     default => "$ENV{HOME}/.hiveminder",
+);
+
+has '+filter_file' => (
+    default => ".hm",
 );
 
 =head2 display_tasks [ARGS], TASKS
@@ -182,6 +186,8 @@ sub todo_tasks {
         starts_before    => 'tomorrow',
         depends_on_count => 0,
 
+        %{ $self->filter_config },
+
         # XXX: this is one place to improve the API
 
         @_
@@ -203,17 +209,23 @@ sub todo {
     $self->display_tasks( $self->todo_tasks(@_) );
 }
 
-=head2 create_task SUMMARY
+=head2 create_task SUMMARY, ARGS
 
-Creates a new task with C<SUMMARY>.
+Creates a new task with C<SUMMARY>. You may also specify arguments such as what
+tags the task will have.
 
 =cut
 
 sub create_task {
     my $self    = shift;
     my $summary = shift;
+    my %args    = @_;
 
-    $self->create(Task => summary => $summary);
+    $self->create(Task =>
+        summary => $summary,
+        %{ $self->filter_config },
+        %args,
+    );
 }
 
 =head2 read_task LOCATOR
@@ -364,6 +376,8 @@ sub braindump {
     if (ref($tokens) eq 'ARRAY') {
         $tokens = join ' ', @$tokens;
     }
+
+    $tokens .= ' ' . join ' ', %{ $self->filter_config };
 
     my $ret = $self->act('ParseTasksMagically', text => $text, tokens => $tokens);
     if ($args{returns} eq 'ids') {

@@ -2,7 +2,7 @@ NAME
     Net::Hiveminder - Perl interface to hiveminder.com
 
 VERSION
-    Version 0.04 released 07 Feb 08
+    Version 0.05 released 17 Mar 08
 
 SYNOPSIS
         use Net::Hiveminder;
@@ -55,8 +55,9 @@ DESCRIPTION
 
     In scalar context it will return the concatenation of the tasks.
 
-  create_task SUMMARY
-    Creates a new task with "SUMMARY".
+  create_task SUMMARY, ARGS
+    Creates a new task with "SUMMARY". You may also specify arguments such
+    as what tags the task will have.
 
   read_task LOCATOR
     Load task "LOCATOR".

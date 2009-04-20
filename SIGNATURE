@@ -14,35 +14,38 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 9b603cab9aa861754ae9babb92106bd736c7526f Changes
-SHA1 6cd5059a0260d875f6de80bb3c6c1adcfd2df3d6 MANIFEST
-SHA1 025d8b93c1519f3c18b1369be42acd88a47fe339 META.yml
-SHA1 02b87b724e669f3fb61bd05036033c1e8d5b486c Makefile.PL
-SHA1 52f14e81d1a3b4566a36ab6eb6297f6363aeca17 README
+SHA1 443fd330bc8917a0b6f1a12e209bbcb72687aea2 Changes
+SHA1 c85c0fa10effdb4d9e333a9df5057c1e6efc033f MANIFEST
+SHA1 480e390a634ee260cc76750f1e4b60e438932fc7 META.yml
+SHA1 9165a1aca68d00ec94d9c23dcfa4a6ee971b8404 Makefile.PL
 SHA1 053eac69ed3cb793881ada775a13862e92700564 bin/hm
 SHA1 c2d28957665c0c4436f4985af8d486b36bb75f1a bin/hm-braindump
 SHA1 6786f1492f1fc5937ed7b0d4555ace37075c14d1 bin/hm-create
 SHA1 729dd6a8a5b75ed46b6cde6776e5f73f7ee28a87 bin/hm-done
 SHA1 e06b801a037fb365d9367a907d920057ad8e01cc bin/hm-sync
 SHA1 966dcedaa4412d460902936b63cdf1b5ec945324 bin/hm-todo
-SHA1 603bb9de29fb8cba7f13409c546750972eff645d inc/Module/AutoInstall.pm
-SHA1 78edb89a439463e44c33a72bbee84c54d0dc8aaf inc/Module/Install.pm
-SHA1 ae32c02b539901de91f06366ce9bdbb7a7bd040b inc/Module/Install/AutoInstall.pm
-SHA1 8ea4e37df83fd0c1c050be5c8da75545c3828d9b inc/Module/Install/Base.pm
-SHA1 1da6031583c32f0d1ec073b8376102fc51427dcc inc/Module/Install/Can.pm
-SHA1 b779375b90c16af2f31f38a1dd2b5df223c7f2fb inc/Module/Install/Fetch.pm
-SHA1 6bf0d0d100b94d1a2ce64d010c8813dec26ac480 inc/Module/Install/Include.pm
-SHA1 2054450e1e9c1dd8056362bf4a64ae70d5d71476 inc/Module/Install/Makefile.pm
-SHA1 5d6189b2cad15cf9932a28faafd55130c8247e83 inc/Module/Install/Metadata.pm
-SHA1 8015c2aceacb9b793e8a472036f93d0bac67c0db inc/Module/Install/Scripts.pm
-SHA1 02af973fae2ac3531fa6b704574b2b8cb2a08148 inc/Module/Install/Win32.pm
-SHA1 3a2eab96e91cca8d99938cda7791759ae9d97b3a inc/Module/Install/WriteAll.pm
-SHA1 bd72973a656e22862c811b108705a0842859256f lib/Net/Hiveminder.pm
+SHA1 6cc7c33dbf3e1635f38ac2acc983c410cd0da679 inc/Module/AutoInstall.pm
+SHA1 bc47e8f4bf1fcb7d97f55b9933b6476351a5ea3e inc/Module/Install.pm
+SHA1 d001b4b9a48395a8c4134b234a0e1789138427c5 inc/Module/Install/AuthorTests.pm
+SHA1 cd578a0a05bc3f0cbd81fd9efb39e20c70de7f1a inc/Module/Install/AutoInstall.pm
+SHA1 114a6fb09697f4b016cf9dcd038c9e3519b02022 inc/Module/Install/Base.pm
+SHA1 f1e78d7c4b902eaf95a3289c42669a19f4125d28 inc/Module/Install/Can.pm
+SHA1 d1c70bc59bf648fc6e4e93b1cd6699fc5841fd64 inc/Module/Install/Fetch.pm
+SHA1 ddcd08a072dc0847346f82148bc697d64d1bb2a5 inc/Module/Install/Include.pm
+SHA1 079203f749342191f5c26170649dbeda93b7c294 inc/Module/Install/Makefile.pm
+SHA1 cf79ec0a289b05e1804733c04d91ca04dc5dbbf6 inc/Module/Install/Metadata.pm
+SHA1 4a65d1d8fdc67df89df9a4bc961eb2fd4c7ac39a inc/Module/Install/Scripts.pm
+SHA1 e67c232bed8c4d91a7a2ea06236cf47cd37369d0 inc/Module/Install/Win32.pm
+SHA1 ac709b9014051e94d5afcef5dedf6155124d8cec inc/Module/Install/WriteAll.pm
+SHA1 259e10aa35dca794ab896d6d59a4d4ee8bcd8ef3 lib/Net/Hiveminder.pm
 SHA1 16552e29fc20df41ae80fbd70289ca803d3121c0 t/000-load.t
+SHA1 f15245f1b4f2534ebcd5aa5c04628005a096186d xt/01-dependencies.t
+SHA1 46e94e5661ab8739a0b455d6c2c9ed4cba488f6d xt/99-pod-coverage.t
+SHA1 bb0da54f2b3f2d7955baa41ee458cb3d1887f475 xt/99-pod.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (Darwin)
+Version: GnuPG v1.4.9 (Darwin)
 
-iD8DBQFHq7wssxfQtHhyRPoRAiruAJ9MXRcP7mD2vcV/liW9HImed/9+mgCfXS3a
-LQoLcN055OMySk6XKnsJGmU=
-=427c
+iEYEARECAAYFAknsJMcACgkQEi9d9xCOQEbIEACgg/1iTjOwLWjCIJeUbuXn0A84
+ErIAoIZ1WJ6rHjhqcPnjFQ2Cam7c9Y5F
+=4q1W
 -----END PGP SIGNATURE-----

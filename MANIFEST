@@ -7,6 +7,7 @@ bin/hm-todo
 Changes
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
+inc/Module/Install/AuthorTests.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -21,6 +22,8 @@ lib/Net/Hiveminder.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
-README
-SIGNATURE
 t/000-load.t
+xt/01-dependencies.t
+xt/99-pod-coverage.t
+xt/99-pod.t
+SIGNATURE                                Public-key signature (added by MakeMaker)

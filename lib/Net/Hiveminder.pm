@@ -1,9 +1,8 @@
-#!/usr/bin/env perl
 package Net::Hiveminder;
 use Moose;
 extends 'Net::Jifty';
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use DateTime;
 use Number::RecordLocator;
@@ -320,12 +319,6 @@ sub loc2id {
     return wantarray ? @ids : $ids[0];
 }
 
-=head2 tasks2ids
-
-Deprecated 
-
-=cut
-
 sub tasks2ids {
     Carp::carp "Net::Hiveminder->tasks2ids is deprecated, use loc2id instead.";
     loc2id(@_);
@@ -374,6 +367,15 @@ sub send_feedback {
     my $text = shift;
 
     $self->act('SendFeedback', content => $text);
+}
+
+
+sub get_task_history {
+    my $self = shift;
+    my $task_id = $self->loc2id(shift);
+
+    # see http://hiveminder.com/=/model/BTDT.Model.TaskTransaction
+    return $self->search( 'TaskTransaction', task_id => $task_id, );
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -557,6 +559,10 @@ Transforms the given record locators (or tasks) to regular IDs.
 
 Transform the given IDs into record locators.
 
+=head2 tasks2ids
+
+Deprecated
+
 =head2 comments_on TASK -> (String)s
 
 Returns a list of the comments on the given task.
@@ -571,6 +577,20 @@ of Net::Hiveminder. If Creator is unavailable, then this will throw an error.
 =head2 send_feedback TEXT
 
 Sends the given TEXT as feedback to the Hiveminder team.
+
+=head2 get_task_history LOCATOR
+
+Load the transaction history for task LOCATOR.
+
+Returns an array of transactions looking like:
+
+$VAR1 = {
+    'modified_at' => '2008-07-24 15:38:06',
+    'type' => 'update',
+    'id' => '1745040',
+    'task_id' => '433397',
+    'created_by' => '463'
+};
 
 =head1 SEE ALSO
 
@@ -588,7 +608,7 @@ L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Net-Hiveminder>.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007-2008 Best Practical Solutions.
+Copyright 2007-2009 Best Practical Solutions.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

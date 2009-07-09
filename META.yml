@@ -7,7 +7,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.84'
+generated_by: 'Module::Install version 0.91'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -17,13 +17,16 @@ no_index:
   directory:
     - inc
     - t
+    - xt
+recommends:
+  Email::Simple: 0
+  Email::Simple::Creator: 0
+  Term::Encoding: 0
 requires:
   DateTime: 0
-  Email::Simple: Email::Simple::Creator
   Moose: 0
   Net::Jifty: 0.06
   Number::RecordLocator: 0
-  Term::Encoding: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.07
+version: 0.08
